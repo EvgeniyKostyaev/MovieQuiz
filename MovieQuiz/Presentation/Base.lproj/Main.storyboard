@@ -8,6 +8,11 @@
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="YS Display-Medium.ttf">
+            <string>YSDisplay-Medium</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Movie Quiz View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -17,36 +22,35 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mh7-yo-oTI">
-                                <rect key="frame" x="174" y="288" width="94" height="70"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" name="YSDisplay-Medium" family="YS Display" pointSize="23"/>
-                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7mW-sz-yaG">
-                                <rect key="frame" x="128" y="418" width="158" height="60"/>
+                                <rect key="frame" x="217" y="802" width="177" height="60"/>
+                                <color key="backgroundColor" name="YP White"/>
+                                <fontDescription key="fontDescription" name="YSDisplay-Medium" family="YS Display" pointSize="20"/>
+                                <color key="tintColor" name="YP Black"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Да">
+                                    <color key="titleColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius ">
+                                        <integer key="value" value="15"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mhF-HI-dWS">
+                                <rect key="frame" x="20" y="802" width="177" height="60"/>
                                 <color key="backgroundColor" name="YP White"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="158" id="LSH-yJ-YVs"/>
-                                    <constraint firstAttribute="height" constant="60" id="fbA-3e-Gnv"/>
+                                    <constraint firstAttribute="height" constant="60" id="SFk-m6-MKq"/>
                                 </constraints>
+                                <fontDescription key="fontDescription" name="YSDisplay-Medium" family="YS Display" pointSize="20"/>
                                 <color key="tintColor" name="YP Black"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain">
-                                    <attributedString key="attributedTitle">
-                                        <fragment content="Да">
-                                            <attributes>
-                                                <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                                <font key="NSFont" size="20" name="YSDisplay-Medium"/>
-                                                <font key="NSOriginalFont" size="12" name="Helvetica"/>
-                                            </attributes>
-                                        </fragment>
-                                    </attributedString>
-                                    <attributedString key="attributedSubtitle"/>
-                                </buttonConfiguration>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Нет">
+                                    <color key="titleColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                </state>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius ">
                                         <integer key="value" value="15"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
@@ -55,8 +59,13 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="YP Black"/>
                         <constraints>
-                            <constraint firstItem="7mW-sz-yaG" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="GfX-Jc-KeM"/>
-                            <constraint firstItem="7mW-sz-yaG" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="c3D-My-9tw"/>
+                            <constraint firstItem="7mW-sz-yaG" firstAttribute="width" secondItem="mhF-HI-dWS" secondAttribute="width" id="467-Uo-x2g"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="7mW-sz-yaG" secondAttribute="trailing" constant="20" id="4wG-3w-qqY"/>
+                            <constraint firstItem="mhF-HI-dWS" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="IcE-jH-Zxt"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="mhF-HI-dWS" secondAttribute="bottom" id="Ikb-71-Iwa"/>
+                            <constraint firstItem="7mW-sz-yaG" firstAttribute="height" secondItem="mhF-HI-dWS" secondAttribute="height" id="KW4-17-kbt"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="7mW-sz-yaG" secondAttribute="bottom" id="RL9-tO-fig"/>
+                            <constraint firstItem="7mW-sz-yaG" firstAttribute="leading" secondItem="mhF-HI-dWS" secondAttribute="trailing" constant="20" id="igW-RU-ZKK"/>
                         </constraints>
                     </view>
                 </viewController>
