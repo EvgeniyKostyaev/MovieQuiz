@@ -8,6 +8,10 @@ final class MovieQuizViewController: UIViewController {
     
     private var questions: [QuizQuestion] = []
     
+    private var currentQuestionIndex = 0
+    
+    private var correctAnswers = 0
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,6 +59,14 @@ final class MovieQuizViewController: UIViewController {
         return quizQuestions
     }
     
+    private func convert(model: QuizQuestion) -> QuizStepViewModel {
+        let quizStepViewModel = QuizStepViewModel(image: UIImage(named: model.image) ?? UIImage(),
+                                                  question: model.text,
+                                                  questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
+                                                  
+        return quizStepViewModel
+    }
+    
     // MARK: - Action methods
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
 
@@ -73,6 +85,15 @@ struct QuizQuestion {
   let text: String
   // булевое значение (true, false), правильный ответ на вопрос
   let correctAnswer: Bool
+}
+
+struct QuizStepViewModel {
+  // картинка с афишей фильма с типом UIImage
+  let image: UIImage
+  // вопрос о рейтинге квиза
+  let question: String
+  // строка с порядковым номером этого вопроса (ex. "1/10")
+  let questionNumber: String
 }
 
 /*
