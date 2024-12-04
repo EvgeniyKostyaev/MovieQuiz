@@ -18,8 +18,10 @@ final class MovieQuizViewController: UIViewController {
         
         questions = createQuizQuestions()
         
-        
+        let currentQuestion = questions[currentQuestionIndex]
+        let currentStep = convert(model: currentQuestion)
 
+        show(quiz: currentStep)
     }
     
     // MARK: - Helper methods
@@ -65,6 +67,12 @@ final class MovieQuizViewController: UIViewController {
                                                   questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
                                                   
         return quizStepViewModel
+    }
+    
+    private func show(quiz step: QuizStepViewModel) {
+        imageView.image = step.image
+        textLabel.text = step.question
+        counterLabel.text = step.questionNumber
     }
     
     // MARK: - Action methods
