@@ -75,13 +75,21 @@ final class MovieQuizViewController: UIViewController {
         counterLabel.text = step.questionNumber
     }
     
+    private func showAnswerResult(isCorrect: Bool) {
+       
+    }
+    
     // MARK: - Action methods
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-
+        let currentQuestion = questions[currentQuestionIndex]
+        let givenAnswer = true
+        showAnswerResult(isCorrect: currentQuestion.correctAnswer == givenAnswer)
     }
 
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-
+        let currentQuestion = questions[currentQuestionIndex]
+        let givenAnswer = false
+        showAnswerResult(isCorrect: currentQuestion.correctAnswer == givenAnswer)
     }
 }
 
