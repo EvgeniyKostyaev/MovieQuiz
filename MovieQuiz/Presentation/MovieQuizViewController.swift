@@ -75,6 +75,26 @@ final class MovieQuizViewController: UIViewController {
         counterLabel.text = step.questionNumber
     }
     
+    private func show(quiz result: QuizResultsViewModel) {
+        let alert = UIAlertController(title: result.title,
+                                      message: result.text,
+                                      preferredStyle: .alert)
+
+        let action = UIAlertAction(title: result.buttonText, style: .default) { _ in
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            
+            let currentQuestion = self.questions[self.currentQuestionIndex]
+            let currentStep = self.convert(model: currentQuestion)
+
+            self.show(quiz: currentStep)
+        }
+
+        alert.addAction(action)
+
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     private func showAnswerResult(isCorrect: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
@@ -92,23 +112,11 @@ final class MovieQuizViewController: UIViewController {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questions.count - 1 {
-            let alert = UIAlertController(title: "Этот раунд окончен!",
-                                          message: "Ваш результат: \(correctAnswers)/\(questions.count)",
-                                          preferredStyle: .alert)
-
-            let action = UIAlertAction(title: "Сыграть еще раз", style: .default) { _ in
-                self.currentQuestionIndex = 0
-                self.correctAnswers = 0
-                
-                let currentQuestion = self.questions[self.currentQuestionIndex]
-                let currentStep = self.convert(model: currentQuestion)
-
-                self.show(quiz: currentStep)
-            }
-
-            alert.addAction(action)
-
-            self.present(alert, animated: true, completion: nil)
+            let results = QuizResultsViewModel(title: "Этот раунд окончен!",
+                                               text: "Ваш результат: \(correctAnswers)/\(questions.count)",
+                                               buttonText: "Сыграть еще раз")
+            
+            show(quiz: results)
         } else {
             currentQuestionIndex += 1
             
@@ -150,6 +158,15 @@ struct QuizStepViewModel {
   let question: String
   // строка с порядковым номером этого вопроса (ex. "1/10")
   let questionNumber: String
+}
+
+struct QuizResultsViewModel {
+  // строка с заголовком алерта
+  let title: String
+  // строка с текстом о количестве набранных очков
+  let text: String
+  // текст для кнопки алерта
+  let buttonText: String
 }
 
 /*
