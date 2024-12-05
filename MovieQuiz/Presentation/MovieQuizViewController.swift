@@ -125,6 +125,12 @@ final class MovieQuizViewController: UIViewController {
             
             show(quiz: nextStep)
         }
+        
+        resetImageBorderWidth()
+    }
+    
+    private func resetImageBorderWidth() {
+        imageView.layer.borderWidth = 0
     }
     
     // MARK: - Action methods
