@@ -81,6 +81,10 @@ final class MovieQuizViewController: UIViewController {
         imageView.layer.cornerRadius = 20
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         
+        if (isCorrect) {
+            correctAnswers += 1
+        }
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
            self.showNextQuestionOrResults()
         }
@@ -88,7 +92,23 @@ final class MovieQuizViewController: UIViewController {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questions.count - 1 {
-            
+            let alert = UIAlertController(title: "Этот раунд окончен!",
+                                          message: "Ваш результат: \(correctAnswers)/\(questions.count)",
+                                          preferredStyle: .alert)
+
+            let action = UIAlertAction(title: "Сыграть еще раз", style: .default) { _ in
+                self.currentQuestionIndex = 0
+                self.correctAnswers = 0
+                
+                let currentQuestion = self.questions[self.currentQuestionIndex]
+                let currentStep = self.convert(model: currentQuestion)
+
+                self.show(quiz: currentStep)
+            }
+
+            alert.addAction(action)
+
+            self.present(alert, animated: true, completion: nil)
         } else {
             currentQuestionIndex += 1
             
