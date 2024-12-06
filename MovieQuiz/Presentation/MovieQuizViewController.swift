@@ -122,6 +122,7 @@ final class MovieQuizViewController: UIViewController {
         }
         
         resetImageBorderWidth()
+        enableActionButtons()
     }
     
     private func resetImageBorderWidth() {
@@ -137,15 +138,29 @@ final class MovieQuizViewController: UIViewController {
         yesButton.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 20.0)
     }
     
+    private func disableActionButtons() {
+        noButton.isEnabled = false
+        yesButton.isEnabled = false
+    }
+    
+    private func enableActionButtons() {
+        noButton.isEnabled = true
+        yesButton.isEnabled = true
+    }
+    
     // MARK: - Action methods
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        disableActionButtons()
+        
         let currentQuestion = questions[currentQuestionIndex]
         let givenAnswer = true
         showAnswerResult(isCorrect: currentQuestion.correctAnswer == givenAnswer)
     }
 
     @IBAction private func noButtonClicked(_ sender: UIButton) {
+        disableActionButtons()
+        
         let currentQuestion = questions[currentQuestionIndex]
         let givenAnswer = false
         showAnswerResult(isCorrect: currentQuestion.correctAnswer == givenAnswer)
