@@ -7,15 +7,19 @@
 
 class QuestionFactory: QuestionFactoryProtocol {
     
-    func requestNextQuestion() -> QuizQuestion? {
-        guard let index = (0..<quizQuestions.count).randomElement() else {
-            return nil
+    weak var delegate: QuestionFactoryDelegate?
+    
+    func requestNextQuestion() {
+        guard let index = (0..<questions.count).randomElement() else {
+            delegate?.didReceiveNextQuestion(question: nil)
+            return
         }
 
-        return quizQuestions[safe: index]
+        let question = questions[safe: index]
+        delegate?.didReceiveNextQuestion(question: question)
     }
     
-    private let quizQuestions: [QuizQuestion] = [
+    private let questions: [QuizQuestion] = [
         QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
         QuizQuestion(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
         QuizQuestion(image: "Kill Bill", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
