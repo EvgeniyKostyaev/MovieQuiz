@@ -5,7 +5,7 @@
 //  Created by Evgeniy Kostyaev on 17.12.2024.
 //
 
-class QuestionFactory {
+class QuestionFactory: QuestionFactoryProtocol {
     
     func requestNextQuestion() -> QuizQuestion? {
         guard let index = (0..<quizQuestions.count).randomElement() else {
