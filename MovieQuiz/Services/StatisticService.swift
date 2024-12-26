@@ -7,11 +7,38 @@
 
 import Foundation
 
+private enum Keys: String {
+    case correct
+    case bestGame
+    case gamesCount
+}
+
 final class StatisticService: StatisticServiceProtocol {
     
-    var gamesCount: Int = 0
+    private let storage: UserDefaults = .standard
     
-    var bestGame: GameResult = GameResult(correct: <#Int#>, total: <#Int#>, date: <#Date#>)
+    var gamesCount: Int {
+        get {
+            return storage.integer(forKey: Keys.gamesCount.rawValue)
+        }
+        
+        set {
+            storage.set(newValue, forKey: Keys.gamesCount.rawValue)
+        }
+    }
+    
+    var bestGame: GameResult {
+        get {
+            if let gameResult = storage.object(forKey: Keys.bestGame.rawValue) as? GameResult {
+                return gameResult
+            } else {
+                return GameResult(correct: 0, total: 0, date: Date())
+            }
+        }
+        set {
+            storage.set(newValue, forKey: Keys.bestGame.rawValue)
+        }
+    }
     
     var totalAccuracy: Double = 0.0
     
