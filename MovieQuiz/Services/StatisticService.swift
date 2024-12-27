@@ -8,9 +8,10 @@
 import Foundation
 
 private enum Keys: String {
-    case correct
-    case bestGame
     case gamesCount
+    case bestGameCorrect
+    case bestGameTotal
+    case bestGameDate
 }
 
 final class StatisticService: StatisticServiceProtocol {
@@ -29,22 +30,27 @@ final class StatisticService: StatisticServiceProtocol {
     
     var bestGame: GameResult {
         get {
-            if let gameResult = storage.object(forKey: Keys.bestGame.rawValue) as? GameResult {
-                return gameResult
-            } else {
-                return GameResult(correct: 0, total: 0, date: Date())
-            }
+            let correct = storage.integer(forKey: Keys.bestGameCorrect.rawValue)
+            let total = storage.integer(forKey: Keys.bestGameTotal.rawValue)
+            let date = storage.object(forKey: Keys.bestGameDate.rawValue) as? Date ?? Date()
+            
+            return GameResult(correct: correct, total: total, date: date)
         }
         set {
-            storage.set(newValue, forKey: Keys.bestGame.rawValue)
+            storage.set(newValue.correct, forKey: Keys.bestGameCorrect.rawValue)
+            storage.set(newValue.total, forKey: Keys.bestGameTotal.rawValue)
+            storage.set(newValue.date, forKey: Keys.bestGameDate.rawValue)
         }
     }
     
     var totalAccuracy: Double = 0.0
     
     func store(correct count: Int, total amount: Int) {
+        gamesCount += 1
         
+        if (count >= bestGame.correct) {
+            bestGame = GameResult(correct: count, total: amount, date: Date())
+        }
     }
-    
     
 }
