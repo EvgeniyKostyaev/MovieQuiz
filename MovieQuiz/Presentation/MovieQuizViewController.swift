@@ -116,7 +116,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         }
         
         if let totalAccuracy = statisticService?.totalAccuracy {
-            message.append("\nСредняя точность: \(totalAccuracy)%")
+            message.append("\nСредняя точность: \(String(format: "%.2f", totalAccuracy))%")
         }
         
         return message
