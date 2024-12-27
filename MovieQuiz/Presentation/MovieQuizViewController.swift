@@ -79,15 +79,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             
             statisticService?.store(correct: correctAnswers, total: questionsAmount)
             
-            var message = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
-            
-            if let gamesCount = statisticService?.gamesCount {
-                message.append("\nКоличество сыгранных квизов: \(gamesCount)")
-            }
-            
-            if let bestGame = statisticService?.bestGame {
-                message.append("\nРекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))")
-            }
+            let message = getAlertMessage()
             
             let alertModel = AlertModel(
                 title: "Этот раунд окончен!",
@@ -110,6 +102,24 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         resetImageBorderWidth()
         enableActionButtons()
+    }
+    
+    private func getAlertMessage() -> String {
+        var message = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
+        
+        if let gamesCount = statisticService?.gamesCount {
+            message.append("\nКоличество сыгранных квизов: \(gamesCount)")
+        }
+        
+        if let bestGame = statisticService?.bestGame {
+            message.append("\nРекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))")
+        }
+        
+        if let totalAccuracy = statisticService?.totalAccuracy {
+            message.append("\nСредняя точность: \(totalAccuracy)%")
+        }
+        
+        return message
     }
     
     private func resetImageBorderWidth() {
