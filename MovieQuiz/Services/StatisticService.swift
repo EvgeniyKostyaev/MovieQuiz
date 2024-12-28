@@ -26,7 +26,7 @@ final class StatisticService: StatisticServiceProtocol {
     
     var gamesCount: Int {
         get {
-            return storage.integer(forKey: Keys.gamesCount.rawValue)
+            storage.integer(forKey: Keys.gamesCount.rawValue)
         }
         
         set {
@@ -84,14 +84,14 @@ final class StatisticService: StatisticServiceProtocol {
         
         let newGame = GameResult(correct: count, total: amount, date: Date())
         
-        if (newGame.isBetterThan(bestGame)) {
+        if newGame.isBetterThan(bestGame) {
             bestGame = newGame
         }
         
         correctAnswers += count
         totalAnswers += amount
         
-        if (totalAnswers > 0) {
+        if totalAnswers > 0 {
             totalAccuracy = Double((correctAnswers * 100) / totalAnswers)
         }
     }
