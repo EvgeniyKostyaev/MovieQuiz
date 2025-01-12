@@ -42,8 +42,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         self.statisticService = StatisticService()
         
-        showLoadingIndicator()
-        self.questionFactory?.loadData()
+        loadData()
     }
     
     // MARK: - Helper methods
@@ -172,6 +171,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         counterLabelsStackView.isHidden = false
     }
     
+    private func loadData() {
+        showLoadingIndicator()
+        questionFactory?.loadData()
+    }
+    
     private func showNetworkError(message: String) {
         hideLoadingIndicator()
         
@@ -186,7 +190,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
                 self.currentQuestionIndex = 0
                 self.correctAnswers = 0
                 
-                self.questionFactory?.requestNextQuestion()
+                self.loadData()
             }
         )
         
