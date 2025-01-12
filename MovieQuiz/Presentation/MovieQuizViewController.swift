@@ -2,11 +2,12 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
     
-    @IBOutlet private var imageView: UIImageView!
-    @IBOutlet private var textLabel: UILabel!
-    @IBOutlet private var counterTitleLabel: UILabel!
-    @IBOutlet private var counterValueLabel: UILabel!
+    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet private weak var textLabel: UILabel!
     
+    @IBOutlet private weak var counterLabelsStackView: UIStackView!
+    @IBOutlet private weak var counterTitleLabel: UILabel!
+    @IBOutlet private weak var counterValueLabel: UILabel!
     
     @IBOutlet private weak var actionButtonsStackView: UIStackView!
     @IBOutlet private weak var noButton: UIButton!
@@ -167,6 +168,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         actionButtonsStackView.isHidden = false
     }
     
+    private func showCounterLabels() {
+        counterLabelsStackView.isHidden = false
+    }
+    
     private func showNetworkError(message: String) {
         hideLoadingIndicator()
         
@@ -221,6 +226,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         let viewModel = convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
+            self?.showCounterLabels()
             self?.show(quiz: viewModel)
             self?.showActionButtons()
         }
