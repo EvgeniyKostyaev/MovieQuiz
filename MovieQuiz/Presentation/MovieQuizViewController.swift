@@ -7,6 +7,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     @IBOutlet private var counterTitleLabel: UILabel!
     @IBOutlet private var counterValueLabel: UILabel!
     
+    
+    @IBOutlet private weak var actionButtonsStackView: UIStackView!
     @IBOutlet private weak var noButton: UIButton!
     @IBOutlet private weak var yesButton: UIButton!
     
@@ -161,6 +163,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         activityIndicator.stopAnimating()
     }
     
+    private func showActionButtons() {
+        actionButtonsStackView.isHidden = false
+    }
+    
     private func showNetworkError(message: String) {
         hideLoadingIndicator()
         
@@ -216,6 +222,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
+            self?.showActionButtons()
         }
     }
     
