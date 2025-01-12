@@ -39,14 +39,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         self.statisticService = StatisticService()
         
-        self.questionFactory?.requestNextQuestion()
+        showLoadingIndicator()
+        self.questionFactory?.loadData()
     }
     
     // MARK: - Helper methods
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let quizStepViewModel = QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
+            image: UIImage(data: model.image)  ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
         )
@@ -216,6 +217,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
+    }
+    
+    func didLoadDataFromServer() {
+        hideLoadingIndicator()
+        
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: any Error) {
+        hideLoadingIndicator()
+        
+        showNetworkError(message: error.localizedDescription)
     }
     
     // MARK: - AlertPresenterDelegate methods
