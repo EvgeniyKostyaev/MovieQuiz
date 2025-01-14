@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-final class MovieQuizPresenter: QuestionFactoryDelegate {
+final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate {
     
     weak var viewController: MovieQuizViewController?
     
@@ -31,6 +31,10 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         self.questionFactory = questionFactory
         
         self.statisticService = StatisticService()
+        
+        let alertPresenter = AlertPresenter()
+        alertPresenter.delegate = self
+        self.alertPresenter = alertPresenter
         
         loadData()
     }
@@ -160,6 +164,28 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     func didFailToLoadData(errorMessage: String) {
-        viewController?.showNetworkError(message: errorMessage)
+        viewController?.hideLoadingIndicator()
+        
+        let alertModel = AlertModel(
+            title: "Ошибка",
+            message: errorMessage,
+            buttonText: "Попробовать еще раз",
+            completion: { [weak self] in
+                
+                guard let self = self else { return }
+                
+                self.restartGame()
+                
+                self.loadData()
+            }
+        )
+        
+        self.alertPresenter?.showAlert(alertModel: alertModel)
     }
+    
+    // MARK: - AlertPresenterDelegate methods
+    func didShowAlert(alert: UIAlertController) {
+        viewController?.showAlert(alert: alert)
+    }
+    
 }

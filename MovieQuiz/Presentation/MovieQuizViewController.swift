@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
+final class MovieQuizViewController: UIViewController {
     
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var textLabel: UILabel!
@@ -17,8 +17,6 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
     
     private let presenter = MovieQuizPresenter()
     
-    private var alertPresenter: AlertPresenterProtocol?
-    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,10 +24,6 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         setupFonts()
         
         presenter.viewController = self
-        
-        let alertPresenter = AlertPresenter()
-        alertPresenter.delegate = self
-        self.alertPresenter = alertPresenter
     }
     
     func showAnswerResult(isCorrect: Bool) {
@@ -42,7 +36,6 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-            self.presenter.alertPresenter = self.alertPresenter
             self.presenter.showNextQuestionOrResults()
             self.resetImageBorderWidth()
         }
@@ -70,24 +63,8 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         yesButton.isEnabled = true
     }
     
-    func showNetworkError(message: String) {
-        hideLoadingIndicator()
-        
-        let alertModel = AlertModel(
-            title: "Ошибка",
-            message: message,
-            buttonText: "Попробовать еще раз",
-            completion: { [weak self] in
-                
-                guard let self = self else { return }
-                
-                self.presenter.restartGame()
-                
-                presenter.loadData()
-            }
-        )
-        
-        self.alertPresenter?.showAlert(alertModel: alertModel)
+    func showAlert(alert: UIAlertController) {
+        self.present(alert, animated: true, completion: nil)
     }
     
     // MARK: - Helper methods
