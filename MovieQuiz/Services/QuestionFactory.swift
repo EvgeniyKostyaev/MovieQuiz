@@ -59,8 +59,7 @@ final class QuestionFactory: QuestionFactoryProtocol {
                 
                 switch (result) {
                 case .success(let mostPopularMovies):
-                    self.movies = mostPopularMovies.items
-                    self.delegate?.didLoadDataFromServer()
+                    self.handleSuccess(mostPopularMovies)
                 case .failure(let error):
                     self.delegate?.didFailToLoadData(with: error)
                 }
@@ -68,17 +67,20 @@ final class QuestionFactory: QuestionFactoryProtocol {
         }
     }
     
-//    private let questions: [QuizQuestion] = [
-//        QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-//        QuizQuestion(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-//        QuizQuestion(image: "Kill Bill", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-//        QuizQuestion(image: "The Avengers", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-//        QuizQuestion(image: "Deadpool", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-//        QuizQuestion(image: "The Green Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-//        QuizQuestion(image: "Old", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-//        QuizQuestion(image: "The Ice Age Adventures of Buck Wild", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-//        QuizQuestion(image: "Tesla", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-//        QuizQuestion(image: "Vivarium", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false)
-//    ]
+    // MARK: - Helper methods
+    private func handleSuccess(_ mostPopularMovies: MostPopularMovies) {
+        if !mostPopularMovies.errorMessage.isEmpty {
+            self.delegate?.didLoadEmptyDataFromServer(errorMessage: mostPopularMovies.errorMessage)
+            return
+        }
+        
+        self.movies = mostPopularMovies.items
+        
+        if self.movies.isEmpty {
+            self.delegate?.didLoadEmptyDataFromServer(errorMessage: "Список фильмов пуст")
+        } else {
+            self.delegate?.didLoadDataFromServer()
+        }
+    }
 }
 

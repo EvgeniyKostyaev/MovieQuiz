@@ -242,6 +242,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         questionFactory?.requestNextQuestion()
     }
     
+    func didLoadEmptyDataFromServer(errorMessage: String) {
+        hideLoadingIndicator()
+        
+        showNetworkError(message: errorMessage)
+    }
+    
     func didFailToLoadData(with error: any Error) {
         hideLoadingIndicator()
         
