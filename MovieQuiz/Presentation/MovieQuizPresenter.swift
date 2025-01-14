@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-final class MovieQuizPresenter {
+final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     weak var viewController: MovieQuizViewController?
     
@@ -24,6 +24,19 @@ final class MovieQuizPresenter {
     
     private var currentQuestionIndex: Int = 0
     private var correctAnswers = 0
+    
+    init() {
+        let questionFactory = QuestionFactory()
+        questionFactory.delegate = self
+        self.questionFactory = questionFactory
+        
+        loadData()
+    }
+    
+    func loadData() {
+        viewController?.showLoadingIndicator()
+        self.questionFactory?.loadData()
+    }
     
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
@@ -60,17 +73,6 @@ final class MovieQuizPresenter {
     
     func noButtonClicked() {
         didAnswer(isYes: false)
-    }
-    
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else { return }
-            
-        currentQuestion = question
-        let viewModel = convert(model: question)
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.viewController?.show(quiz: viewModel)
-        }
     }
     
     func showNextQuestionOrResults() {
@@ -131,5 +133,31 @@ final class MovieQuizPresenter {
         }
         
         return message
+    }
+    
+    // MARK: QuestionFactoryDelegate methods
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        viewController?.hideLoadingIndicator()
+        viewController?.enableActionButtons()
+        
+        guard let question = question else { return }
+            
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.viewController?.show(quiz: viewModel)
+        }
+    }
+    
+    func didLoadDataFromServer() {
+        viewController?.hideLoadingIndicator()
+        
+        viewController?.showLoadingIndicator()
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(errorMessage: String) {
+        viewController?.showNetworkError(message: errorMessage)
     }
 }

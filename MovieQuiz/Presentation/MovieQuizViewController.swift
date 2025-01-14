@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
+final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
     
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var textLabel: UILabel!
@@ -17,8 +17,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     private let presenter = MovieQuizPresenter()
     
-    private var questionFactory: QuestionFactoryProtocol?
-    
     private var alertPresenter: AlertPresenterProtocol?
     private var statisticService: StatisticServiceProtocol?
     
@@ -30,17 +28,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         presenter.viewController = self
         
-        let questionFactory = QuestionFactory()
-        questionFactory.delegate = self
-        self.questionFactory = questionFactory
-        
         let alertPresenter = AlertPresenter()
         alertPresenter.delegate = self
         self.alertPresenter = alertPresenter
         
         self.statisticService = StatisticService()
-        
-        loadData()
     }
     
     func showAnswerResult(isCorrect: Bool) {
@@ -53,7 +45,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-            self.presenter.questionFactory = self.questionFactory
             self.presenter.statisticService = self.statisticService
             self.presenter.alertPresenter = self.alertPresenter
             self.presenter.showNextQuestionOrResults()
@@ -72,6 +63,35 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     func showLoadingIndicator() {
         activityIndicator.startAnimating()
+    }
+    
+    func hideLoadingIndicator() {
+        activityIndicator.stopAnimating()
+    }
+    
+    func enableActionButtons() {
+        noButton.isEnabled = true
+        yesButton.isEnabled = true
+    }
+    
+    func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        
+        let alertModel = AlertModel(
+            title: "Ошибка",
+            message: message,
+            buttonText: "Попробовать еще раз",
+            completion: { [weak self] in
+                
+                guard let self = self else { return }
+                
+                self.presenter.restartGame()
+                
+                presenter.loadData()
+            }
+        )
+        
+        self.alertPresenter?.showAlert(alertModel: alertModel)
     }
     
     // MARK: - Helper methods
@@ -93,46 +113,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         yesButton.isEnabled = false
     }
     
-    private func enableActionButtons() {
-        noButton.isEnabled = true
-        yesButton.isEnabled = true
-    }
-    
-    private func hideLoadingIndicator() {
-        activityIndicator.stopAnimating()
-    }
-    
     private func showActionButtons() {
         actionButtonsStackView.isHidden = false
     }
     
     private func showCounterLabels() {
         counterLabelsStackView.isHidden = false
-    }
-    
-    private func loadData() {
-        showLoadingIndicator()
-        questionFactory?.loadData()
-    }
-    
-    private func showNetworkError(message: String) {
-        hideLoadingIndicator()
-        
-        let alertModel = AlertModel(
-            title: "Ошибка",
-            message: message,
-            buttonText: "Попробовать еще раз",
-            completion: { [weak self] in
-                
-                guard let self = self else { return }
-                
-                self.presenter.restartGame()
-                
-                self.loadData()
-            }
-        )
-        
-        self.alertPresenter?.showAlert(alertModel: alertModel)
     }
     
     // MARK: - Action methods
@@ -146,27 +132,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         disableActionButtons()
         
         presenter.noButtonClicked()
-    }
-    
-    // MARK: QuestionFactoryDelegate methods
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        hideLoadingIndicator()
-        enableActionButtons()
-        
-        presenter.didReceiveNextQuestion(question: question)
-    }
-    
-    func didLoadDataFromServer() {
-        hideLoadingIndicator()
-        
-        showLoadingIndicator()
-        questionFactory?.requestNextQuestion()
-    }
-    
-    func didFailToLoadData(errorMessage: String) {
-        hideLoadingIndicator()
-        
-        showNetworkError(message: errorMessage)
     }
     
     // MARK: - AlertPresenterDelegate methods
