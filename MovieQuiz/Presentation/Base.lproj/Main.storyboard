@@ -106,7 +106,7 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="Us1-ol-nld">
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="Us1-ol-nld">
                                 <rect key="frame" x="187" y="440" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="EfN-3J-aCC"/>

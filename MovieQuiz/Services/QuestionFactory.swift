@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum GraterOrLessType: String {
+    case greater = "больше"
+    case less = "меньшe"
+}
+
 final class QuestionFactory: QuestionFactoryProtocol {
     
     weak var delegate: QuestionFactoryDelegate?
@@ -46,17 +51,26 @@ final class QuestionFactory: QuestionFactoryProtocol {
                 return
             }
             
-            let rating = Float(movie.rating) ?? 0
-            
-            let randomRaiting = Float.random(in: 7...9)
-            
-            let text = "Рейтинг этого фильма больше, чем \(Int(randomRaiting))?"
-            
-            let correctAnswer = rating > randomRaiting
-            
-            let question = QuizQuestion(image: imageData,
-                                        text: text,
-                                        correctAnswer: correctAnswer)
+            let currentRating = Float(movie.rating) ?? 0
+
+            let lessRating: Float = max(currentRating - 1.0, 0)
+            let greaterRating: Float = min(currentRating + 1.0, 10)
+
+            let randomRating = Float.random(in: lessRating...greaterRating)
+
+            let greaterOrLessOptions: [GraterOrLessType] = [.greater, .less]
+            let greaterOrLessOption = greaterOrLessOptions.randomElement()!
+
+            let text = String(format: "Рейтинг этого фильма %@, чем %.1f?", greaterOrLessOption.rawValue, randomRating)
+
+            let epsilon: Float = 0.01
+            var correctAnswer: Bool
+            switch (greaterOrLessOption) {
+            case .greater: correctAnswer = (currentRating - randomRating) > epsilon
+            case .less: correctAnswer = (randomRating - currentRating) > epsilon
+            }
+
+            let question = QuizQuestion(image: imageData, text: text, correctAnswer: correctAnswer)
             
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
