@@ -26,21 +26,6 @@ final class MovieQuizViewController: UIViewController {
         presenter.viewController = self
     }
     
-    func showAnswerResult(isCorrect: Bool) {
-        imageView.layer.masksToBounds = true
-        imageView.layer.borderWidth = 8
-        imageView.layer.cornerRadius = 20
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        
-        presenter.didAnswer(isCorrectAnswer: isCorrect)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
-            self.presenter.showNextQuestionOrResults()
-            self.resetImageBorderWidth()
-        }
-    }
-    
     func show(quiz step: QuizStepViewModel) {
         showCounterLabels()
         showActionButtons()
@@ -67,11 +52,18 @@ final class MovieQuizViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
-    // MARK: - Helper methods
-    private func resetImageBorderWidth() {
+    func highlightImageBorder(isCorrectAnswer: Bool) {
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
+        imageView.layer.cornerRadius = 20
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+    }
+    
+    func resetImageBorderWidth() {
         imageView.layer.borderWidth = 0
     }
     
+    // MARK: - Helper methods
     private func setupFonts() {
         counterTitleLabel.font = UIFont(name: "YSDisplay-Medium", size: 20.0)
         counterValueLabel.font = UIFont(name: "YSDisplay-Medium", size: 20.0)

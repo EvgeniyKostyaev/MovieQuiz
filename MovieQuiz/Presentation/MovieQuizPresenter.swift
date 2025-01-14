@@ -114,13 +114,26 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
     }
     
     // MARK: - Helper methods
+    private func showAnswerResult(isCorrect: Bool) {
+        
+        viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
+        
+        didAnswer(isCorrectAnswer: isCorrect)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            self.showNextQuestionOrResults()
+            self.viewController?.resetImageBorderWidth()
+        }
+    }
+    
     private func didAnswer(isYes: Bool) {
         guard let currentQuestion = currentQuestion else {
             return
         }
         
         let givenAnswer = isYes
-        viewController?.showAnswerResult(isCorrect: currentQuestion.correctAnswer == givenAnswer)
+        showAnswerResult(isCorrect: currentQuestion.correctAnswer == givenAnswer)
     }
     
     private func getAlertMessage() -> String {
