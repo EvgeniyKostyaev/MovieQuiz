@@ -26,9 +26,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private var correctAnswers = 0
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        presenter.viewController = self
         
         setupFonts()
         
@@ -45,14 +46,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         loadData()
     }
     
-    // MARK: - Helper methods
-    private func show(quiz step: QuizStepViewModel) {
-        imageView.image = step.image
-        textLabel.text = step.question
-        counterValueLabel.text = step.questionNumber
-    }
-    
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.cornerRadius = 20
@@ -66,6 +60,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             guard let self = self else { return }
             self.showNextQuestionOrResults()
         }
+    }
+    
+    // MARK: - Helper methods
+    private func show(quiz step: QuizStepViewModel) {
+        imageView.image = step.image
+        textLabel.text = step.question
+        counterValueLabel.text = step.questionNumber
     }
     
     private func showNextQuestionOrResults() {
@@ -189,23 +190,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         disableActionButtons()
         
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        
-        let givenAnswer = true
-        showAnswerResult(isCorrect: currentQuestion.correctAnswer == givenAnswer)
+        presenter.currentQuestion = currentQuestion
+        presenter.yesButtonClicked()
     }
 
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         disableActionButtons()
         
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        
-        let givenAnswer = false
-        showAnswerResult(isCorrect: currentQuestion.correctAnswer == givenAnswer)
+        presenter.currentQuestion = currentQuestion
+        presenter.noButtonClicked()
     }
     
     // MARK: QuestionFactoryDelegate methods
