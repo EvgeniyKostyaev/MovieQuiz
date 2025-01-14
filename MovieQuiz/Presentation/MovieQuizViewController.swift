@@ -28,9 +28,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        presenter.viewController = self
-        
         setupFonts()
+        
+        presenter.viewController = self
         
         let questionFactory = QuestionFactory()
         questionFactory.delegate = self
@@ -57,7 +57,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-            self.showNextQuestionOrResults()
+            self.presenter.correctAnswers = self.correctAnswers
+            self.presenter.questionFactory = self.questionFactory
+            self.presenter.statisticService = self.statisticService
+            self.presenter.alertPresenter = self.alertPresenter
+            self.presenter.showNextQuestionOrResults()
+            self.resetImageBorderWidth()
         }
     }
     
@@ -70,59 +75,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         counterValueLabel.text = step.questionNumber
     }
     
+    func showLoadingIndicator() {
+        activityIndicator.startAnimating()
+    }
+    
     // MARK: - Helper methods
-    private func showNextQuestionOrResults() {
-        if presenter.isLastQuestion() {
-            
-            statisticService?.store(correct: correctAnswers, total: presenter.questionsAmount)
-            
-            let message = getAlertMessage()
-            
-            let alertModel = AlertModel(
-                title: "Этот раунд окончен!",
-                message: message,
-                buttonText: "Сыграть ещё раз",
-                completion: { [weak self] in
-                    
-                    guard let self = self else { return }
-                    
-                    self.presenter.resetQuestionIndex()
-                    self.correctAnswers = 0
-                    
-                    self.showLoadingIndicator()
-                    self.questionFactory?.requestNextQuestion()
-                }
-            )
-            
-            self.alertPresenter?.showAlert(alertModel: alertModel)
-        } else {
-            presenter.switchToNextQuestion()
-            
-            showLoadingIndicator()
-            questionFactory?.requestNextQuestion()
-        }
-        
-        resetImageBorderWidth()
-    }
-    
-    private func getAlertMessage() -> String {
-        var message = "Ваш результат: \(correctAnswers)/\(presenter.questionsAmount)"
-        
-        if let gamesCount = statisticService?.gamesCount {
-            message.append("\nКоличество сыгранных квизов: \(gamesCount)")
-        }
-        
-        if let bestGame = statisticService?.bestGame {
-            message.append("\nРекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))")
-        }
-        
-        if let totalAccuracy = statisticService?.totalAccuracy {
-            message.append("\nСредняя точность: \(String(format: "%.2f", totalAccuracy))%")
-        }
-        
-        return message
-    }
-    
     private func resetImageBorderWidth() {
         imageView.layer.borderWidth = 0
     }
@@ -144,10 +101,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private func enableActionButtons() {
         noButton.isEnabled = true
         yesButton.isEnabled = true
-    }
-    
-    private func showLoadingIndicator() {
-        activityIndicator.startAnimating()
     }
     
     private func hideLoadingIndicator() {

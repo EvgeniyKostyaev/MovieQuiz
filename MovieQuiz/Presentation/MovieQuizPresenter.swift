@@ -16,8 +16,15 @@ final class MovieQuizPresenter {
     
     var currentQuestion: QuizQuestion?
     
+    var correctAnswers = 0
+    
+    var questionFactory: QuestionFactoryProtocol?
+    
+    var statisticService: StatisticServiceProtocol?
+    
+    var alertPresenter: AlertPresenterProtocol?
+    
     private var currentQuestionIndex: Int = 0
-   
     
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
@@ -60,6 +67,38 @@ final class MovieQuizPresenter {
         }
     }
     
+    func showNextQuestionOrResults() {
+        if self.isLastQuestion() {
+            
+            statisticService?.store(correct: correctAnswers, total: self.questionsAmount)
+            
+            let message = getAlertMessage()
+            
+            let alertModel = AlertModel(
+                title: "Этот раунд окончен!",
+                message: message,
+                buttonText: "Сыграть ещё раз",
+                completion: { [weak self] in
+                    
+                    guard let self = self else { return }
+                    
+                    self.resetQuestionIndex()
+                    self.correctAnswers = 0
+                    
+                    self.viewController?.showLoadingIndicator()
+                    self.questionFactory?.requestNextQuestion()
+                }
+            )
+            
+            self.alertPresenter?.showAlert(alertModel: alertModel)
+        } else {
+            self.switchToNextQuestion()
+            
+            viewController?.showLoadingIndicator()
+            questionFactory?.requestNextQuestion()
+        }
+    }
+    
     // MARK: - Helper methods
     private func didAnswer(isYes: Bool) {
         guard let currentQuestion = currentQuestion else {
@@ -68,5 +107,23 @@ final class MovieQuizPresenter {
         
         let givenAnswer = isYes
         viewController?.showAnswerResult(isCorrect: currentQuestion.correctAnswer == givenAnswer)
+    }
+    
+    private func getAlertMessage() -> String {
+        var message = "Ваш результат: \(correctAnswers)/\(self.questionsAmount)"
+        
+        if let gamesCount = statisticService?.gamesCount {
+            message.append("\nКоличество сыгранных квизов: \(gamesCount)")
+        }
+        
+        if let bestGame = statisticService?.bestGame {
+            message.append("\nРекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))")
+        }
+        
+        if let totalAccuracy = statisticService?.totalAccuracy {
+            message.append("\nСредняя точность: \(String(format: "%.2f", totalAccuracy))%")
+        }
+        
+        return message
     }
 }
