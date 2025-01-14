@@ -16,8 +16,6 @@ final class MovieQuizPresenter {
     
     var currentQuestion: QuizQuestion?
     
-    var correctAnswers = 0
-    
     var questionFactory: QuestionFactoryProtocol?
     
     var statisticService: StatisticServiceProtocol?
@@ -25,17 +23,25 @@ final class MovieQuizPresenter {
     var alertPresenter: AlertPresenterProtocol?
     
     private var currentQuestionIndex: Int = 0
+    private var correctAnswers = 0
     
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
     
-    func resetQuestionIndex() {
+    func restartGame() {
         currentQuestionIndex = 0
+        correctAnswers = 0
     }
     
     func switchToNextQuestion() {
         currentQuestionIndex += 1
+    }
+    
+    func didAnswer(isCorrectAnswer: Bool) {
+        if (isCorrectAnswer) {
+            correctAnswers += 1
+        }
     }
     
     func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -82,7 +88,7 @@ final class MovieQuizPresenter {
                     
                     guard let self = self else { return }
                     
-                    self.resetQuestionIndex()
+                    self.restartGame()
                     self.correctAnswers = 0
                     
                     self.viewController?.showLoadingIndicator()
