@@ -18,7 +18,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private let presenter = MovieQuizPresenter()
     
     private var questionFactory: QuestionFactoryProtocol?
-    private var currentQuestion: QuizQuestion?
     
     private var alertPresenter: AlertPresenterProtocol?
     private var statisticService: StatisticServiceProtocol?
@@ -62,13 +61,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         }
     }
     
-    // MARK: - Helper methods
-    private func show(quiz step: QuizStepViewModel) {
+    func show(quiz step: QuizStepViewModel) {
+        showCounterLabels()
+        showActionButtons()
+        
         imageView.image = step.image
         textLabel.text = step.question
         counterValueLabel.text = step.questionNumber
     }
     
+    // MARK: - Helper methods
     private func showNextQuestionOrResults() {
         if presenter.isLastQuestion() {
             
@@ -190,14 +192,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         disableActionButtons()
         
-        presenter.currentQuestion = currentQuestion
         presenter.yesButtonClicked()
     }
 
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         disableActionButtons()
         
-        presenter.currentQuestion = currentQuestion
         presenter.noButtonClicked()
     }
     
@@ -206,16 +206,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         hideLoadingIndicator()
         enableActionButtons()
         
-        guard let question = question else { return }
-            
-        currentQuestion = question
-        let viewModel = presenter.convert(model: question)
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.showCounterLabels()
-            self?.show(quiz: viewModel)
-            self?.showActionButtons()
-        }
+        presenter.didReceiveNextQuestion(question: question)
     }
     
     func didLoadDataFromServer() {
