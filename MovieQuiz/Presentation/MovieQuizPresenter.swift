@@ -12,15 +12,13 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
     
     weak var viewController: MovieQuizViewController?
     
-    let questionsAmount: Int = 10
+    private let questionsAmount: Int = 10
     
-    var currentQuestion: QuizQuestion?
+    private var currentQuestion: QuizQuestion?
     
-    var questionFactory: QuestionFactoryProtocol?
-    
-    var statisticService: StatisticServiceProtocol?
-    
-    var alertPresenter: AlertPresenterProtocol?
+    private var questionFactory: QuestionFactoryProtocol?
+    private var statisticService: StatisticServiceProtocol?
+    private var alertPresenter: AlertPresenterProtocol?
     
     private var currentQuestionIndex: Int = 0
     private var correctAnswers = 0
@@ -39,31 +37,40 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
         loadData()
     }
     
-    func loadData() {
+    func yesButtonClicked() {
+        didAnswer(isYes: true)
+    }
+    
+    func noButtonClicked() {
+        didAnswer(isYes: false)
+    }
+    
+    // MARK: - Helper methods
+    private func loadData() {
         viewController?.showLoadingIndicator()
         self.questionFactory?.loadData()
     }
     
-    func isLastQuestion() -> Bool {
+    private func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
     
-    func restartGame() {
+    private func restartGame() {
         currentQuestionIndex = 0
         correctAnswers = 0
     }
     
-    func switchToNextQuestion() {
+    private func switchToNextQuestion() {
         currentQuestionIndex += 1
     }
     
-    func didAnswer(isCorrectAnswer: Bool) {
+    private func didAnswer(isCorrectAnswer: Bool) {
         if (isCorrectAnswer) {
             correctAnswers += 1
         }
     }
     
-    func convert(model: QuizQuestion) -> QuizStepViewModel {
+    private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let quizStepViewModel = QuizStepViewModel(
             image: UIImage(data: model.image)  ?? UIImage(),
             question: model.text,
@@ -73,15 +80,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
         return quizStepViewModel
     }
     
-    func yesButtonClicked() {
-        didAnswer(isYes: true)
-    }
-    
-    func noButtonClicked() {
-        didAnswer(isYes: false)
-    }
-    
-    func showNextQuestionOrResults() {
+    private func proceedToNextQuestionOrResults() {
         if self.isLastQuestion() {
             
             statisticService?.store(correct: correctAnswers, total: self.questionsAmount)
@@ -113,16 +112,14 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
         }
     }
     
-    // MARK: - Helper methods
-    private func showAnswerResult(isCorrect: Bool) {
-        
+    private func proceedWithAnswer(isCorrect: Bool) {
         viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
         
         didAnswer(isCorrectAnswer: isCorrect)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-            self.showNextQuestionOrResults()
+            self.proceedToNextQuestionOrResults()
             self.viewController?.resetImageBorderWidth()
         }
     }
@@ -133,7 +130,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
         }
         
         let givenAnswer = isYes
-        showAnswerResult(isCorrect: currentQuestion.correctAnswer == givenAnswer)
+        proceedWithAnswer(isCorrect: currentQuestion.correctAnswer == givenAnswer)
     }
     
     private func getAlertMessage() -> String {
