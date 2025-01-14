@@ -2,13 +2,18 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
     
-    @IBOutlet private var imageView: UIImageView!
-    @IBOutlet private var textLabel: UILabel!
-    @IBOutlet private var counterTitleLabel: UILabel!
-    @IBOutlet private var counterValueLabel: UILabel!
+    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet private weak var textLabel: UILabel!
     
+    @IBOutlet private weak var counterLabelsStackView: UIStackView!
+    @IBOutlet private weak var counterTitleLabel: UILabel!
+    @IBOutlet private weak var counterValueLabel: UILabel!
+    
+    @IBOutlet private weak var actionButtonsStackView: UIStackView!
     @IBOutlet private weak var noButton: UIButton!
     @IBOutlet private weak var yesButton: UIButton!
+    
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
     private var currentQuestionIndex = 0
     private let questionsAmount: Int = 10
@@ -37,14 +42,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         self.statisticService = StatisticService()
         
-        self.questionFactory?.requestNextQuestion()
+        loadData()
     }
     
     // MARK: - Helper methods
-    
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let quizStepViewModel = QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
+            image: UIImage(data: model.image)  ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
         )
@@ -85,10 +89,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
                 title: "Этот раунд окончен!",
                 message: message,
                 buttonText: "Сыграть еще раз",
-                completion: {
+                completion: { [weak self] in
+                    
+                    guard let self = self else { return }
+                    
                     self.currentQuestionIndex = 0
                     self.correctAnswers = 0
                     
+                    self.showLoadingIndicator()
                     self.questionFactory?.requestNextQuestion()
                 }
             )
@@ -97,11 +105,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         } else {
             currentQuestionIndex += 1
             
+            showLoadingIndicator()
             questionFactory?.requestNextQuestion()
         }
         
         resetImageBorderWidth()
-        enableActionButtons()
     }
     
     private func getAlertMessage() -> String {
@@ -145,8 +153,49 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         yesButton.isEnabled = true
     }
     
-    // MARK: - Action methods
+    private func showLoadingIndicator() {
+        activityIndicator.startAnimating()
+    }
     
+    private func hideLoadingIndicator() {
+        activityIndicator.stopAnimating()
+    }
+    
+    private func showActionButtons() {
+        actionButtonsStackView.isHidden = false
+    }
+    
+    private func showCounterLabels() {
+        counterLabelsStackView.isHidden = false
+    }
+    
+    private func loadData() {
+        showLoadingIndicator()
+        questionFactory?.loadData()
+    }
+    
+    private func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        
+        let alertModel = AlertModel(
+            title: "Ошибка",
+            message: message,
+            buttonText: "Попробовать еще раз",
+            completion: { [weak self] in
+                
+                guard let self = self else { return }
+                
+                self.currentQuestionIndex = 0
+                self.correctAnswers = 0
+                
+                self.loadData()
+            }
+        )
+        
+        self.alertPresenter?.showAlert(alertModel: alertModel)
+    }
+    
+    // MARK: - Action methods
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         disableActionButtons()
         
@@ -170,20 +219,36 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     // MARK: QuestionFactoryDelegate methods
-    
     func didReceiveNextQuestion(question: QuizQuestion?) {
+        hideLoadingIndicator()
+        enableActionButtons()
+        
         guard let question = question else { return }
             
         currentQuestion = question
         let viewModel = convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
+            self?.showCounterLabels()
             self?.show(quiz: viewModel)
+            self?.showActionButtons()
         }
     }
     
-    // MARK: - AlertPresenterDelegate methods
+    func didLoadDataFromServer() {
+        hideLoadingIndicator()
+        
+        showLoadingIndicator()
+        questionFactory?.requestNextQuestion()
+    }
     
+    func didFailToLoadData(errorMessage: String) {
+        hideLoadingIndicator()
+        
+        showNetworkError(message: errorMessage)
+    }
+    
+    // MARK: - AlertPresenterDelegate methods
     func didShowAlert(alert: UIAlertController) {
         self.present(alert, animated: true, completion: nil)
     }
