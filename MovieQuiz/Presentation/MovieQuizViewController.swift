@@ -18,7 +18,6 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
     private let presenter = MovieQuizPresenter()
     
     private var alertPresenter: AlertPresenterProtocol?
-    private var statisticService: StatisticServiceProtocol?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -31,8 +30,6 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         let alertPresenter = AlertPresenter()
         alertPresenter.delegate = self
         self.alertPresenter = alertPresenter
-        
-        self.statisticService = StatisticService()
     }
     
     func showAnswerResult(isCorrect: Bool) {
@@ -45,7 +42,6 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-            self.presenter.statisticService = self.statisticService
             self.presenter.alertPresenter = self.alertPresenter
             self.presenter.showNextQuestionOrResults()
             self.resetImageBorderWidth()

@@ -30,6 +30,8 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         questionFactory.delegate = self
         self.questionFactory = questionFactory
         
+        self.statisticService = StatisticService()
+        
         loadData()
     }
     
