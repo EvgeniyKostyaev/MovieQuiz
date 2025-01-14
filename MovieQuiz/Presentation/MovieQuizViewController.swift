@@ -88,7 +88,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             let alertModel = AlertModel(
                 title: "Этот раунд окончен!",
                 message: message,
-                buttonText: "Сыграть еще раз",
+                buttonText: "Сыграть ещё раз",
                 completion: { [weak self] in
                     
                     guard let self = self else { return }
