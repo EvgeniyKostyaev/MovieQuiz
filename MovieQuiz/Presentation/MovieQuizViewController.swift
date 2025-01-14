@@ -46,7 +46,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     // MARK: - Helper methods
-    
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let quizStepViewModel = QuizStepViewModel(
             image: UIImage(data: model.image)  ?? UIImage(),
@@ -97,6 +96,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
                     self.currentQuestionIndex = 0
                     self.correctAnswers = 0
                     
+                    self.showLoadingIndicator()
                     self.questionFactory?.requestNextQuestion()
                 }
             )
@@ -105,6 +105,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         } else {
             currentQuestionIndex += 1
             
+            showLoadingIndicator()
             questionFactory?.requestNextQuestion()
         }
         
@@ -196,7 +197,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     // MARK: - Action methods
-    
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         disableActionButtons()
         
@@ -220,8 +220,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     // MARK: QuestionFactoryDelegate methods
-    
     func didReceiveNextQuestion(question: QuizQuestion?) {
+        hideLoadingIndicator()
+        
         guard let question = question else { return }
             
         currentQuestion = question
@@ -237,6 +238,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     func didLoadDataFromServer() {
         hideLoadingIndicator()
         
+        showLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
     
@@ -253,7 +255,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     // MARK: - AlertPresenterDelegate methods
-    
     func didShowAlert(alert: UIAlertController) {
         self.present(alert, animated: true, completion: nil)
     }
