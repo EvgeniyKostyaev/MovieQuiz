@@ -110,7 +110,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         }
         
         resetImageBorderWidth()
-        enableActionButtons()
     }
     
     private func getAlertMessage() -> String {
@@ -222,6 +221,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     // MARK: QuestionFactoryDelegate methods
     func didReceiveNextQuestion(question: QuizQuestion?) {
         hideLoadingIndicator()
+        enableActionButtons()
         
         guard let question = question else { return }
             
