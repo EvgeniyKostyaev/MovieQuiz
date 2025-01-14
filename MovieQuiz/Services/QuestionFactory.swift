@@ -15,6 +15,8 @@ final class QuestionFactory: QuestionFactoryProtocol {
     
     private var movies: [MostPopularMovie] = []
     
+    private var retryCount = 7
+    
     func requestNextQuestion() {
          
         DispatchQueue.global().async { [weak self] in
@@ -29,7 +31,19 @@ final class QuestionFactory: QuestionFactoryProtocol {
             do {
                 imageData = try Data(contentsOf: movie.resizedImageURL)
             } catch {
-                print("Failed to load image")
+                print("Failed to load image: \(error.localizedDescription)")
+                
+                if retryCount > 0 {
+                    retryCount -= 1
+                    
+                    self.requestNextQuestion()
+                } else {
+                    DispatchQueue.main.async {
+                        self.delegate?.didFailToLoadData(errorMessage: "Не удалось загрузить изображение после нескольких попыток")
+                    }
+                }
+                
+                return
             }
             
             let rating = Float(movie.rating) ?? 0
@@ -41,8 +55,8 @@ final class QuestionFactory: QuestionFactoryProtocol {
             let correctAnswer = rating > randomRaiting
             
             let question = QuizQuestion(image: imageData,
-                                         text: text,
-                                         correctAnswer: correctAnswer)
+                                        text: text,
+                                        correctAnswer: correctAnswer)
             
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
@@ -61,7 +75,7 @@ final class QuestionFactory: QuestionFactoryProtocol {
                 case .success(let mostPopularMovies):
                     self.handleSuccess(mostPopularMovies)
                 case .failure(let error):
-                    self.delegate?.didFailToLoadData(with: error)
+                    self.delegate?.didFailToLoadData(errorMessage: error.localizedDescription)
                 }
             }
         }
@@ -70,14 +84,14 @@ final class QuestionFactory: QuestionFactoryProtocol {
     // MARK: - Helper methods
     private func handleSuccess(_ mostPopularMovies: MostPopularMovies) {
         if !mostPopularMovies.errorMessage.isEmpty {
-            self.delegate?.didLoadEmptyDataFromServer(errorMessage: mostPopularMovies.errorMessage)
+            self.delegate?.didFailToLoadData(errorMessage: mostPopularMovies.errorMessage)
             return
         }
         
         self.movies = mostPopularMovies.items
         
         if self.movies.isEmpty {
-            self.delegate?.didLoadEmptyDataFromServer(errorMessage: "Список фильмов пуст")
+            self.delegate?.didFailToLoadData(errorMessage: "Список фильмов пуст")
         } else {
             self.delegate?.didLoadDataFromServer()
         }
