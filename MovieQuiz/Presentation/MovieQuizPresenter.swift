@@ -45,6 +45,16 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
         didAnswer(isYes: false)
     }
     
+    func convert(model: QuizQuestion) -> QuizStepViewModel {
+        let quizStepViewModel = QuizStepViewModel(
+            image: UIImage(data: model.image)  ?? UIImage(),
+            question: model.text,
+            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
+        )
+                                                  
+        return quizStepViewModel
+    }
+    
     // MARK: - Helper methods
     private func loadData() {
         viewController?.showLoadingIndicator()
@@ -68,16 +78,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
         if (isCorrectAnswer) {
             correctAnswers += 1
         }
-    }
-    
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let quizStepViewModel = QuizStepViewModel(
-            image: UIImage(data: model.image)  ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
-        )
-                                                  
-        return quizStepViewModel
     }
     
     private func proceedToNextQuestionOrResults() {
