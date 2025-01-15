@@ -10,7 +10,7 @@ import UIKit
 
 final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate {
     
-    weak var viewController: MovieQuizViewController?
+    weak var viewController: MovieQuizViewControllerProtocol?
     
     private let questionsAmount: Int = 10
     
