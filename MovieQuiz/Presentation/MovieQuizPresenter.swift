@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate {
+final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     weak var viewController: MovieQuizViewControllerProtocol?
     
@@ -18,7 +18,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
     
     private var questionFactory: QuestionFactoryProtocol?
     private var statisticService: StatisticServiceProtocol?
-    private var alertPresenter: AlertPresenterProtocol?
     
     private var currentQuestionIndex: Int = 0
     private var correctAnswers = 0
@@ -29,10 +28,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
         self.questionFactory = questionFactory
         
         self.statisticService = StatisticService()
-        
-        let alertPresenter = AlertPresenter()
-        alertPresenter.delegate = self
-        self.alertPresenter = alertPresenter
         
         loadData()
     }
@@ -103,7 +98,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
                 }
             )
             
-            self.alertPresenter?.showAlert(alertModel: alertModel)
+            self.viewController?.showAlert(alertModel: alertModel)
         } else {
             self.switchToNextQuestion()
             
@@ -190,12 +185,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate, AlertPresenterDelegate 
             }
         )
         
-        self.alertPresenter?.showAlert(alertModel: alertModel)
-    }
-    
-    // MARK: - AlertPresenterDelegate methods
-    func didShowAlert(alert: UIAlertController) {
-        viewController?.showAlert(alert: alert)
+        self.viewController?.showAlert(alertModel: alertModel)
     }
     
 }

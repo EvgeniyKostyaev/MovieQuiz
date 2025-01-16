@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol, AlertPresenterDelegate {
     
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var textLabel: UILabel!
@@ -15,6 +15,8 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
+    private var alertPresenter: AlertPresenterProtocol?
+    
     private let presenter = MovieQuizPresenter()
     
     // MARK: - Lifecycle
@@ -24,6 +26,11 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         setupFonts()
         
         presenter.viewController = self
+        
+        let alertPresenter = AlertPresenter()
+        alertPresenter.delegate = self
+         
+        self.alertPresenter = alertPresenter
     }
     
     func show(quiz step: QuizStepViewModel) {
@@ -33,6 +40,10 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         imageView.image = step.image
         textLabel.text = step.question
         counterValueLabel.text = step.questionNumber
+    }
+    
+    func showAlert(alertModel: AlertModel) {
+        alertPresenter?.showAlert(alertModel: alertModel)
     }
     
     func showLoadingIndicator() {
@@ -46,10 +57,6 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     func enableActionButtons() {
         noButton.isEnabled = true
         yesButton.isEnabled = true
-    }
-    
-    func showAlert(alert: UIAlertController) {
-        self.present(alert, animated: true, completion: nil)
     }
     
     func highlightImageBorder(isCorrectAnswer: Bool) {
