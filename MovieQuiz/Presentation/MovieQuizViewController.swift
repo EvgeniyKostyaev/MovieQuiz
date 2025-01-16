@@ -37,7 +37,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         showCounterLabels()
         showActionButtons()
         
-        imageView.image = step.image
+        imageView.image = UIImage(data: step.imageData)  ?? UIImage()
         textLabel.text = step.question
         counterValueLabel.text = step.questionNumber
     }
