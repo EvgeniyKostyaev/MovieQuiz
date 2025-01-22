@@ -14,7 +14,7 @@ protocol MoviesLoading {
 struct MoviesLoader: MoviesLoading {
     
     // MARK: - NetworkClient
-    private let networkClient = NetworkClient()
+    var networkClient: NetworkRouting = NetworkClient()
     
     // MARK: - URL
     private var mostPopularMoviesUrl: URL {

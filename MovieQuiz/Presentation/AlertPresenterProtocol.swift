@@ -5,8 +5,6 @@
 //  Created by Evgeniy Kostyaev on 24.12.2024.
 //
 
-import UIKit
-
-protocol AlertPresenterProtocol {
+protocol AlertPresenterProtocol: AnyObject {
     func showAlert(alertModel: AlertModel)
 }
